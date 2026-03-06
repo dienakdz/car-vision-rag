@@ -11,7 +11,7 @@ from app.core.config import (
     TEMPLATES_DIR,
     UPLOAD_DIR,
 )
-from app.services.detector import detect_car
+from app.services.analyzer import analyze_car_image
 
 router = APIRouter()
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
@@ -44,7 +44,7 @@ async def predict(file: UploadFile = File(...)):
         with save_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        result = detect_car(str(save_path))
+        result = analyze_car_image(str(save_path))
 
         return JSONResponse({
             "success": True,

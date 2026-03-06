@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Car Vision RAG</title>
-  <link rel="stylesheet" href="../static/css/style.css">
+  <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
   <div class="container">
     <h1>Car Vision RAG</h1>
-    <p>Upload ảnh ô tô để hệ thống phân tích.</p>
+    <p>Upload ảnh ô tô để hệ thống phân tích body type và truy hồi tri thức liên quan.</p>
 
     <form id="uploadForm">
       <input type="file" id="fileInput" name="file" accept="image/*" required>
@@ -17,16 +17,87 @@
     </form>
 
     <div id="previewWrapper" class="preview-wrapper hidden">
-      <h3>Ảnh đã chọn</h3>
+      <h3>Ảnh bạn chọn</h3>
       <img id="previewImage" alt="Preview">
     </div>
 
+    <div id="outputImages" class="hidden">
+      <h3>Ảnh gốc đã upload</h3>
+      <img id="originalImage" alt="Original uploaded image">
+
+      <h3>Ảnh crop xe chính</h3>
+      <img id="croppedImage" alt="Cropped car image">
+    </div>
+
+    <div id="analysisCard" class="analysis-card hidden">
+      <h2>Kết quả phân tích</h2>
+
+      <div class="analysis-grid">
+        <div class="metric-box">
+          <span class="metric-label">Body type</span>
+          <span id="predictedLabel" class="metric-value">-</span>
+        </div>
+
+        <div class="metric-box">
+          <span class="metric-label">Confidence</span>
+          <span id="confidenceValue" class="metric-value">-</span>
+        </div>
+
+        <div class="metric-box">
+          <span class="metric-label">Detector confidence</span>
+          <span id="detectorConfidence" class="metric-value">-</span>
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <h3>Tóm tắt</h3>
+        <p id="summaryText">-</p>
+      </div>
+
+      <div class="summary-box">
+        <h3>Giải thích từ knowledge base</h3>
+        <p id="knowledgeSummary">-</p>
+      </div>
+
+      <div class="info-columns">
+        <div class="info-box">
+          <h3>Đặc điểm</h3>
+          <ul id="characteristicsList"></ul>
+        </div>
+
+        <div class="info-box">
+          <h3>Ưu điểm</h3>
+          <ul id="prosList"></ul>
+        </div>
+
+        <div class="info-box">
+          <h3>Nhược điểm</h3>
+          <ul id="consList"></ul>
+        </div>
+
+        <div class="info-box">
+          <h3>Phù hợp với</h3>
+          <ul id="bestForList"></ul>
+        </div>
+
+        <div class="info-box">
+          <h3>Ví dụ xe phổ biến</h3>
+          <ul id="examplesList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-box">
+  <h3>Trích đoạn từ brochure PDF</h3>
+  <p id="pdfSummary">-</p>
+</div>
+
     <div class="result-box">
-      <h3>Kết quả</h3>
+      <h3>JSON raw</h3>
       <pre id="result">Chưa có dữ liệu.</pre>
     </div>
   </div>
 
-  <script src="../static/js/app.js"></script>
+  <script src="/static/js/app.js"></script>
 </body>
 </html>

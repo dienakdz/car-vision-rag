@@ -1,0 +1,135 @@
+[
+  {
+    "id": "bodytype_sedan",
+    "type": "body_type",
+    "label": "sedan",
+    "title": "Sedan",
+    "summary": "Sedan là kiểu xe du lịch có khoang hành lý tách biệt với khoang hành khách, thường có 4 cửa và thiết kế cân đối.",
+    "characteristics": [
+      "Thân xe thấp, dáng dài",
+      "Khoang hành lý tách riêng phía sau",
+      "Thường có 4 cửa",
+      "Ưu tiên sự êm ái và ổn định khi chạy đường phố"
+    ],
+    "pros": [
+      "Lái đầm và ổn định",
+      "Thiết kế phổ biến, dễ sử dụng",
+      "Phù hợp đi gia đình hoặc công việc"
+    ],
+    "cons": [
+      "Khoảng sáng gầm thường không cao",
+      "Khả năng đi đường xấu kém hơn SUV"
+    ],
+    "best_for": [
+      "Đi phố",
+      "Đi làm hằng ngày",
+      "Gia đình nhỏ"
+    ],
+    "examples": [
+      "Toyota Camry",
+      "Honda Civic",
+      "Mazda 3 Sedan",
+      "Mercedes-Benz C-Class"
+    ]
+  },
+  {
+    "id": "bodytype_suv",
+    "type": "body_type",
+    "label": "suv",
+    "title": "SUV",
+    "summary": "SUV là dòng xe gầm cao, không gian rộng, thường phù hợp cho gia đình hoặc nhu cầu đi nhiều loại địa hình hơn sedan.",
+    "characteristics": [
+      "Gầm xe cao",
+      "Tư thế ngồi cao, tầm nhìn thoáng",
+      "Khoang cabin và khoang hành lý rộng",
+      "Hợp với gia đình hoặc đi xa"
+    ],
+    "pros": [
+      "Không gian rộng",
+      "Dễ leo lề, đi đường xấu tốt hơn sedan",
+      "Tầm quan sát tốt"
+    ],
+    "cons": [
+      "Thường tiêu hao nhiên liệu hơn sedan",
+      "Thân xe lớn hơn nên xoay trở trong phố có thể khó hơn"
+    ],
+    "best_for": [
+      "Gia đình",
+      "Đi đường dài",
+      "Đi nhiều loại địa hình đô thị và ngoại ô"
+    ],
+    "examples": [
+      "Honda CR-V",
+      "Mazda CX-5",
+      "Hyundai Tucson",
+      "Toyota Corolla Cross"
+    ]
+  },
+  {
+    "id": "bodytype_hatchback",
+    "type": "body_type",
+    "label": "hatchback",
+    "title": "Hatchback",
+    "summary": "Hatchback là dòng xe có cửa sau mở lên cùng với kính hậu, thân xe ngắn gọn và linh hoạt khi di chuyển trong đô thị.",
+    "characteristics": [
+      "Phần đuôi xe ngắn",
+      "Cửa cốp sau liền với khoang hành khách",
+      "Dễ xoay trở trong phố",
+      "Kích thước thường gọn hơn sedan"
+    ],
+    "pros": [
+      "Nhỏ gọn, dễ lái trong phố",
+      "Linh hoạt khi đỗ xe",
+      "Cửa sau tiện khi xếp đồ"
+    ],
+    "cons": [
+      "Không gian có thể nhỏ hơn SUV",
+      "Nhìn tổng thể thường không dài và sang như sedan"
+    ],
+    "best_for": [
+      "Đi phố",
+      "Người lái mới",
+      "Nhu cầu di chuyển linh hoạt"
+    ],
+    "examples": [
+      "Toyota Yaris Hatchback",
+      "Honda Jazz",
+      "Mazda 2 Hatchback",
+      "Kia Morning"
+    ]
+  },
+  {
+    "id": "bodytype_pickup",
+    "type": "body_type",
+    "label": "pickup",
+    "title": "Pickup",
+    "summary": "Pickup là dòng xe bán tải có khoang cabin phía trước và thùng hàng phía sau, phù hợp cho nhu cầu chở hàng kết hợp chở người.",
+    "characteristics": [
+      "Có thùng hàng phía sau",
+      "Gầm cao",
+      "Khung xe thiên về tải và đa dụng",
+      "Có thể dùng cho cả công việc lẫn gia đình"
+    ],
+    "pros": [
+      "Chở hàng tốt",
+      "Khả năng đi đường xấu khá",
+      "Tính đa dụng cao"
+    ],
+    "cons": [
+      "Kích thước lớn",
+      "Đi phố đông có thể bất tiện hơn xe nhỏ",
+      "Cảm giác lái thường không êm như sedan"
+    ],
+    "best_for": [
+      "Chở hàng",
+      "Đi công trình",
+      "Nhu cầu đa dụng"
+    ],
+    "examples": [
+      "Ford Ranger",
+      "Toyota Hilux",
+      "Mitsubishi Triton",
+      "Isuzu D-Max"
+    ]
+  }
+]
