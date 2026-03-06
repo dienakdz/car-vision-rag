@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-multipart
+jinja2
+pillow
+ultralytics
+torch
+torchvision
+transformers
+qdrant-client[fastembed]

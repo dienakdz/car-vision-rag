@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Vision RAG</title>
+  <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Car Vision RAG</h1>
+    <p>Upload ảnh ô tô để hệ thống phân tích.</p>
+
+    <form id="uploadForm">
+      <input type="file" id="fileInput" name="file" accept="image/*" required>
+      <button type="submit">Phân tích ảnh</button>
+    </form>
+
+    <div id="previewWrapper" class="preview-wrapper hidden">
+      <h3>Ảnh đã chọn</h3>
+      <img id="previewImage" alt="Preview">
+    </div>
+
+    <div class="result-box">
+      <h3>Kết quả</h3>
+      <pre id="result">Chưa có dữ liệu.</pre>
+    </div>
+  </div>
+
+  <script src="../static/js/app.js"></script>
+</body>
+</html>
