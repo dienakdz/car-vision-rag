@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import re
+
 import fitz  # PyMuPDF
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,32 +11,84 @@ OUTPUT_PATH = BASE_DIR / "data" / "kb" / "pdf_chunks.json"
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 150
 
-
 FILE_METADATA = {
-    "my25-camry-ebrochure.pdf": {
-        "make": "Toyota",
-        "model": "Camry",
-        "year": 2025,
-        "body_type": "sedan"
+    "01_Ho_so_cong_ty_Minh_Dien_Showroom_KB.pdf": {
+        "make": None,
+        "model": "Company Profile",
+        "year": None,
+        "body_type": None,
+        "kb_type": "company_profile",
     },
-    "rav4_ebrochure.pdf": {
-        "make": "Toyota",
-        "model": "RAV4",
-        "year": 2023,
-        "body_type": "suv"
+    "02_Ho_so_mau_xe_Template_Minh_Dien_Showroom.pdf": {
+        "make": None,
+        "model": "Vehicle Template",
+        "year": None,
+        "body_type": None,
+        "kb_type": "vehicle_template",
     },
-    "tacoma_ebrochure.pdf": {
-        "make": "Toyota",
-        "model": "Tacoma",
-        "year": 2024,
-        "body_type": "pickup"
+    "03_Chinh_sach_ban_hang_va_dich_vu_Minh_Dien_Showroom.pdf": {
+        "make": None,
+        "model": "Sales Policy",
+        "year": None,
+        "body_type": None,
+        "kb_type": "sales_policy",
     },
-    "MY17 Civic HB Brochure Online PDF_B14.pdf": {
-        "make": "Honda",
-        "model": "Civic Hatchback",
-        "year": 2017,
-        "body_type": "hatchback"
-    }
+    "04_FAQ_va_KB_Chatbot_Minh_Dien_Showroom.pdf": {
+        "make": None,
+        "model": "Chatbot FAQ",
+        "year": None,
+        "body_type": None,
+        "kb_type": "chatbot_faq",
+    },
+    "05_Guide_Sedan_Minh_Dien_Showroom.pdf": {
+        "make": None,
+        "model": "Sedan Guide",
+        "year": None,
+        "body_type": "sedan",
+        "kb_type": "vehicle_template",
+    },
+    "06_Guide_SUV_Minh_Dien_Showroom.pdf": {
+        "make": None,
+        "model": "SUV Guide",
+        "year": None,
+        "body_type": "suv",
+        "kb_type": "vehicle_template",
+    },
+    "07_Guide_Pickup_Minh_Dien_Showroom.pdf": {
+        "make": None,
+        "model": "Pickup Guide",
+        "year": None,
+        "body_type": "pickup",
+        "kb_type": "vehicle_template",
+    },
+    "08_Guide_Hatchback_Minh_Dien_Showroom.pdf": {
+        "make": None,
+        "model": "Hatchback Guide",
+        "year": None,
+        "body_type": "hatchback",
+        "kb_type": "vehicle_template",
+    },
+    "09_Bo_cau_hoi_tu_van_theo_nhu_cau_Minh_Dien_Showroom.pdf": {
+        "make": None,
+        "model": "Consultation Question Bank",
+        "year": None,
+        "body_type": None,
+        "kb_type": "chatbot_faq",
+    },
+    "10_Quy_trinh_Test_Drive_va_Dinh_gia_Thu_xe_cu_Minh_Dien_Showroom.pdf": {
+        "make": None,
+        "model": "Test Drive and Trade-in Workflow",
+        "year": None,
+        "body_type": None,
+        "kb_type": "sales_policy",
+    },
+}
+
+BODY_TYPE_KEYWORDS = {
+    "sedan": ("sedan",),
+    "suv": ("suv",),
+    "hatchback": ("hatchback",),
+    "pickup": ("pickup", "truck"),
 }
 
 
@@ -45,8 +98,8 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
-def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP):
-    chunks = []
+def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP) -> list[str]:
+    chunks: list[str] = []
     start = 0
     text_length = len(text)
 
@@ -58,78 +111,113 @@ def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVE
 
         if end == text_length:
             break
-
         start = end - overlap
 
     return chunks
 
 
-def extract_pdf_text(pdf_path: Path):
+def extract_pdf_text(pdf_path: Path) -> list[dict]:
     doc = fitz.open(pdf_path)
-    pages = []
+    pages: list[dict] = []
 
     for page_num, page in enumerate(doc, start=1):
-        text = page.get_text("text")
-        text = clean_text(text)
+        text = clean_text(page.get_text("text"))
         if text:
-            pages.append({
-                "page": page_num,
-                "text": text
-            })
+            pages.append({"page": page_num, "text": text})
 
     doc.close()
     return pages
 
 
-def main():
-    all_chunks = []
-    chunk_id = 1
+def infer_body_type_from_text(text: str) -> str | None:
+    lower = text.lower()
+    best_label = None
+    best_score = 0
 
+    for label, keywords in BODY_TYPE_KEYWORDS.items():
+        score = sum(lower.count(keyword) for keyword in keywords)
+        if score > best_score:
+            best_label = label
+            best_score = score
+
+    return best_label if best_score > 0 else None
+
+
+def detect_section_type(text: str) -> str:
+    lower = text.lower()
+
+    for word in ("design", "exterior", "interior", "performance", "capability", "technology", "safety"):
+        if word in lower:
+            return word
+
+    if "feature" in lower or "features" in lower:
+        return "features"
+
+    if "specification" in lower or "dimensions" in lower or "capacity" in lower:
+        return "specs"
+
+    return "general"
+
+
+def main() -> None:
+    all_chunks: list[dict] = []
+    chunk_id = 1
     pdf_files = list(PDF_DIR.glob("*.pdf"))
 
     if not pdf_files:
-        print("Không tìm thấy file PDF nào trong data/kb/pdfs/")
+        print("Khong tim thay file PDF nao trong data/kb/pdfs/")
         return
 
     for pdf_file in pdf_files:
-        metadata = FILE_METADATA.get(pdf_file.name, {
-            "make": None,
-            "model": pdf_file.stem,
-            "year": None,
-            "body_type": None
-        })
+        metadata = FILE_METADATA.get(
+            pdf_file.name,
+            {
+                "make": None,
+                "model": pdf_file.stem,
+                "year": None,
+                "body_type": None,
+                "kb_type": "unknown",
+            },
+        )
 
-        print(f"Đang xử lý: {pdf_file.name}")
-
+        print(f"Dang xu ly: {pdf_file.name}")
         pages = extract_pdf_text(pdf_file)
 
         for page_data in pages:
             page_num = page_data["page"]
             page_text = page_data["text"]
-
             chunks = chunk_text(page_text)
 
-            for i, chunk in enumerate(chunks, start=1):
-                all_chunks.append({
-                    "id": chunk_id,
-                    "text": chunk,
-                    "payload": {
-                        "source_file": pdf_file.name,
-                        "page": page_num,
-                        "chunk_index": i,
-                        "make": metadata["make"],
-                        "model": metadata["model"],
-                        "year": metadata["year"],
-                        "body_type": metadata["body_type"],
-                        "doc_type": "pdf_brochure"
+            for idx, chunk in enumerate(chunks, start=1):
+                section_type = detect_section_type(chunk)
+                chunk_body_type = metadata.get("body_type")
+                if not chunk_body_type and metadata.get("kb_type") == "vehicle_template":
+                    chunk_body_type = infer_body_type_from_text(chunk)
+
+                all_chunks.append(
+                    {
+                        "id": chunk_id,
+                        "text": chunk,
+                        "payload": {
+                            "source_file": pdf_file.name,
+                            "page": page_num,
+                            "chunk_index": idx,
+                            "make": metadata.get("make"),
+                            "model": metadata.get("model"),
+                            "year": metadata.get("year"),
+                            "body_type": chunk_body_type,
+                            "kb_type": metadata.get("kb_type", "unknown"),
+                            "doc_type": f"{metadata.get('kb_type', 'unknown')}_pdf",
+                            "section_type": section_type,
+                        },
                     }
-                })
+                )
                 chunk_id += 1
 
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+    with OUTPUT_PATH.open("w", encoding="utf-8") as f:
         json.dump(all_chunks, f, ensure_ascii=False, indent=2)
 
-    print(f"\nĐã lưu {len(all_chunks)} chunks vào: {OUTPUT_PATH}")
+    print(f"\nDa luu {len(all_chunks)} chunks vao: {OUTPUT_PATH}")
 
 
 if __name__ == "__main__":

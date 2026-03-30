@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from app.core.config import UPLOAD_DIR, PUBLIC_UPLOAD_URL_PREFIX
+from app.core.config import PDF_RETRIEVAL_LIMIT, PUBLIC_UPLOAD_URL_PREFIX, UPLOAD_DIR
 from app.services.detector import detect_car
 from app.services.classifier import classify_body_type
-from app.services.rag import retrieve_pdf_knowledge
+from app.services.retriever import retrieve_pdf_knowledge
 from app.services.structured_kb import get_structured_body_type_knowledge
 from app.utils.image import crop_image
-
+from app.services.session_store import set_last_prediction
 
 def build_analysis_summary(classification_result: dict) -> str:
     if not classification_result:
@@ -67,7 +67,24 @@ def analyze_car_image(image_path: str) -> dict:
     top_k = classification_result.get("top_k", [])
 
     structured_knowledge = get_structured_body_type_knowledge(predicted_label) if predicted_label else None
-    pdf_knowledge = retrieve_pdf_knowledge(predicted_label, top_k=top_k) if predicted_label else None
+    pdf_knowledge = (
+        retrieve_pdf_knowledge(
+            predicted_label,
+            top_k=top_k,
+            limit=PDF_RETRIEVAL_LIMIT,
+        )
+        if predicted_label
+        else None
+    )
+
+    set_last_prediction({
+        "predicted_label": classification_result.get("predicted_label"),
+        "confidence": classification_result.get("confidence"),
+        "top_k": classification_result.get("top_k", []),
+        "summary": summary,
+        "crop_url": crop_result.get("crop_url"),
+        "original_image_url": original_url
+    })
 
     return {
         "detected": True,

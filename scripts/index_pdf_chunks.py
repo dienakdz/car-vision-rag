@@ -10,38 +10,52 @@ COLLECTION_NAME = "car_pdf_kb"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 
-def load_chunks():
-    with open(CHUNKS_PATH, "r", encoding="utf-8") as f:
+def load_chunks() -> list[dict]:
+    with CHUNKS_PATH.open("r", encoding="utf-8") as f:
         return json.load(f)
 
 
-def main():
+def main() -> None:
     chunks = load_chunks()
+    if not chunks:
+        print("Khong co chunk de index.")
+        return
 
-    client = QdrantClient(path=str(QDRANT_STORAGE))
-    client.set_model(EMBED_MODEL)
+    QDRANT_STORAGE.mkdir(parents=True, exist_ok=True)
+    try:
+        client = QdrantClient(path=str(QDRANT_STORAGE))
+    except RuntimeError as exc:
+        msg = str(exc)
+        if "already accessed by another instance" in msg:
+            print("Qdrant local dang bi lock. Hay tat app/server dang chay roi thu lai.")
+            return
+        raise
 
-    if client.collection_exists(COLLECTION_NAME):
-        client.delete_collection(COLLECTION_NAME)
+    try:
+        client.set_model(EMBED_MODEL)
 
-    documents = [chunk["text"] for chunk in chunks]
-    metadata = []
-    ids = []
+        if client.collection_exists(COLLECTION_NAME):
+            client.delete_collection(COLLECTION_NAME)
 
-    for chunk in chunks:
-        payload = dict(chunk["payload"])
-        payload["text"] = chunk["text"]
-        metadata.append(payload)
-        ids.append(chunk["id"])
+        documents = [chunk["text"] for chunk in chunks]
+        metadata = []
+        ids = []
 
-    client.add(
-        collection_name=COLLECTION_NAME,
-        documents=documents,
-        metadata=metadata,
-        ids=ids,
-    )
+        for chunk in chunks:
+            payload = dict(chunk["payload"])
+            payload["text"] = chunk["text"]
+            metadata.append(payload)
+            ids.append(chunk["id"])
 
-    print(f"Đã index {len(chunks)} chunks vào collection: {COLLECTION_NAME}")
+        client.add(
+            collection_name=COLLECTION_NAME,
+            documents=documents,
+            metadata=metadata,
+            ids=ids,
+        )
+        print(f"Da index {len(chunks)} chunks vao collection: {COLLECTION_NAME}")
+    finally:
+        client.close()
 
 
 if __name__ == "__main__":

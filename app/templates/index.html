@@ -4,99 +4,165 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Car Vision RAG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Car Vision RAG</h1>
-    <p>Upload ảnh ô tô để hệ thống phân tích body type và truy hồi tri thức liên quan.</p>
+  <div class="bg-glow bg-glow-left"></div>
+  <div class="bg-glow bg-glow-right"></div>
 
-    <form id="uploadForm">
-      <input type="file" id="fileInput" name="file" accept="image/*" required>
-      <button type="submit">Phân tích ảnh</button>
-    </form>
-
-    <div id="previewWrapper" class="preview-wrapper hidden">
-      <h3>Ảnh bạn chọn</h3>
-      <img id="previewImage" alt="Preview">
-    </div>
-
-    <div id="outputImages" class="hidden">
-      <h3>Ảnh gốc đã upload</h3>
-      <img id="originalImage" alt="Original uploaded image">
-
-      <h3>Ảnh crop xe chính</h3>
-      <img id="croppedImage" alt="Cropped car image">
-    </div>
-
-    <div id="analysisCard" class="analysis-card hidden">
-      <h2>Kết quả phân tích</h2>
-
-      <div class="analysis-grid">
-        <div class="metric-box">
-          <span class="metric-label">Body type</span>
-          <span id="predictedLabel" class="metric-value">-</span>
-        </div>
-
-        <div class="metric-box">
-          <span class="metric-label">Confidence</span>
-          <span id="confidenceValue" class="metric-value">-</span>
-        </div>
-
-        <div class="metric-box">
-          <span class="metric-label">Detector confidence</span>
-          <span id="detectorConfidence" class="metric-value">-</span>
-        </div>
+  <main class="app-shell">
+    <header class="hero card reveal">
+      <div>
+        <p class="eyebrow">Computer Vision + Retrieval</p>
+        <h1>Car Vision RAG Console</h1>
+        <p class="hero-text">
+          Upload ảnh xe để phân tích body type, sau đó chat trực tiếp để hỏi sâu hơn theo ngữ cảnh vừa nhận diện.
+        </p>
       </div>
-
-      <div class="summary-box">
-        <h3>Tóm tắt</h3>
-        <p id="summaryText">-</p>
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Ready
       </div>
+    </header>
 
-      <div class="summary-box">
-        <h3>Giải thích từ knowledge base</h3>
-        <p id="knowledgeSummary">-</p>
-      </div>
-
-      <div class="info-columns">
-        <div class="info-box">
-          <h3>Đặc điểm</h3>
-          <ul id="characteristicsList"></ul>
+    <section class="workspace">
+      <section class="card reveal panel panel-analysis">
+        <div class="panel-head">
+          <h2>Vision Analysis</h2>
+          <p>Upload ảnh xe và xem insight từ model + knowledge base.</p>
         </div>
 
-        <div class="info-box">
-          <h3>Ưu điểm</h3>
-          <ul id="prosList"></ul>
+        <form id="uploadForm" class="upload-form">
+          <label for="fileInput" class="file-label">
+            <span>Chọn ảnh xe</span>
+            <input type="file" id="fileInput" name="file" accept="image/*" required>
+          </label>
+          <button type="submit" class="btn-primary">Phân tích ảnh</button>
+        </form>
+
+        <div id="previewWrapper" class="preview-wrapper hidden">
+          <h3>Ảnh vừa chọn</h3>
+          <img id="previewImage" alt="Preview">
         </div>
 
-        <div class="info-box">
-          <h3>Nhược điểm</h3>
-          <ul id="consList"></ul>
+        <div id="outputImages" class="output-images hidden">
+          <article>
+            <h3>Ảnh gốc đã upload</h3>
+            <img id="originalImage" alt="Original uploaded image">
+          </article>
+          <article>
+            <h3>Ảnh crop xe chính</h3>
+            <img id="croppedImage" alt="Cropped car image">
+          </article>
         </div>
 
-        <div class="info-box">
-          <h3>Phù hợp với</h3>
-          <ul id="bestForList"></ul>
+        <div id="analysisCard" class="analysis-card hidden">
+          <h3>Kết quả phân tích</h3>
+
+          <div class="analysis-grid">
+            <div class="metric-box">
+              <span class="metric-label">Body type</span>
+              <span id="predictedLabel" class="metric-value">-</span>
+            </div>
+
+            <div class="metric-box">
+              <span class="metric-label">Confidence</span>
+              <span id="confidenceValue" class="metric-value">-</span>
+            </div>
+
+            <div class="metric-box">
+              <span class="metric-label">Detector confidence</span>
+              <span id="detectorConfidence" class="metric-value">-</span>
+            </div>
+          </div>
+
+          <div class="summary-box">
+            <h4>Tóm tắt model</h4>
+            <p id="summaryText">-</p>
+          </div>
+
+          <div class="summary-box">
+            <h4>Structured knowledge</h4>
+            <p id="knowledgeSummary">-</p>
+          </div>
+
+          <div class="summary-box">
+            <h4>Trích đoạn brochure PDF</h4>
+            <p id="pdfSummary">-</p>
+          </div>
+
+          <div class="info-columns">
+            <div class="info-box">
+              <h4>Đặc điểm</h4>
+              <ul id="characteristicsList"></ul>
+            </div>
+
+            <div class="info-box">
+              <h4>Ưu điểm</h4>
+              <ul id="prosList"></ul>
+            </div>
+
+            <div class="info-box">
+              <h4>Nhược điểm</h4>
+              <ul id="consList"></ul>
+            </div>
+
+            <div class="info-box">
+              <h4>Phù hợp với</h4>
+              <ul id="bestForList"></ul>
+            </div>
+
+            <div class="info-box">
+              <h4>Ví dụ phổ biến</h4>
+              <ul id="examplesList"></ul>
+            </div>
+          </div>
         </div>
 
-        <div class="info-box">
-          <h3>Ví dụ xe phổ biến</h3>
-          <ul id="examplesList"></ul>
+        <details class="result-box">
+          <summary>JSON raw</summary>
+          <pre id="result">Chưa có dữ liệu.</pre>
+        </details>
+      </section>
+
+      <section class="card reveal panel panel-chat">
+        <div class="panel-head">
+          <h2>Assistant Chat</h2>
+          <p>Hỏi thêm về xe vừa upload, chính sách bán hàng, hoặc so sánh body type.</p>
         </div>
-      </div>
-    </div>
 
-    <div class="summary-box">
-  <h3>Trích đoạn từ brochure PDF</h3>
-  <p id="pdfSummary">-</p>
-</div>
+        <div id="chatStatus" class="chat-status">
+          Chưa có ngữ cảnh ảnh. Bạn vẫn có thể hỏi câu hỏi chung.
+        </div>
 
-    <div class="result-box">
-      <h3>JSON raw</h3>
-      <pre id="result">Chưa có dữ liệu.</pre>
-    </div>
-  </div>
+        <div class="quick-prompts">
+          <button type="button" class="chip" data-prompt="Xe này hợp đi gia đình không?">Xe hợp gia đình?</button>
+          <button type="button" class="chip" data-prompt="Sedan khác SUV ở điểm nào?">Sedan vs SUV</button>
+          <button type="button" class="chip" data-prompt="Showroom có hỗ trợ trả góp không?">Hỗ trợ trả góp</button>
+        </div>
+
+        <div id="chatMessages" class="chat-messages">
+          <div class="message message-assistant">
+            <p>Xin chào, mình có thể giải thích kết quả phân tích ảnh hoặc tư vấn theo knowledge base của showroom.</p>
+          </div>
+        </div>
+
+        <form id="chatForm" class="chat-form">
+          <input
+            type="text"
+            id="chatInput"
+            placeholder="Nhập câu hỏi cho assistant..."
+            maxlength="500"
+            required
+          >
+          <button type="submit" class="btn-primary">Gửi</button>
+        </form>
+      </section>
+    </section>
+  </main>
 
   <script src="/static/js/app.js"></script>
 </body>
